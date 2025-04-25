@@ -36,6 +36,23 @@ catch(error){
 }
 });
 
+app.get("/api/products",async(req,res)=>{
+try{
+
+    // await Product.find({}).then((products)=>{
+    // res.status(200).json({success:true,data:products});
+    // });
+
+    //method 2
+    const products = await Product.find({});        //{} means fetch all things/products
+    res.status(200).json({success:true,data:products});
+}
+catch(error){
+    console.log("Error in Get Products: ",error.message);
+    res.status(500).json({success:false,message:`Server error: ${error.message}`});
+}
+});
+
 app.listen(5000,()=>{
     connectDB();
     console.log("Server is running on port 5000");
