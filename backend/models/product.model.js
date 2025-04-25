@@ -13,8 +13,7 @@ const productSchema = mongoose.Schema({
         required: true,
     },
 },{
-
-    timeStamps:true //createdAt and updatedAt
+    timestamps:true //createdAt and updatedAt
 });
 
 const Product = mongoose.model("Product",productSchema);    //it will be named as products collection in our database
