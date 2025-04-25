@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 import { connectDB } from './config/db.js';
 import Product from './models/product.model.js';
+import mongoose from 'mongoose';
 dotenv.config();
 
 const app=express();
@@ -52,6 +53,26 @@ catch(error){
     res.status(500).json({success:false,message:`Server error: ${error.message}`});
 }
 });
+
+//update api
+app.put("/api/products/:id",async(req,res)=>{
+    const {id}=req.params;
+    const product = req.body;
+    if(!product){
+        return res.status(400).json({success:false,message:"Product not found"});
+    }
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({success:false,message:"Invalid product id"});
+    }
+    try{
+        await Product.findByIdAndUpdate(id,product,{new:true});
+        res.status(200).json({success:true,data:product});
+    }
+    catch(error){
+        console.log("Error in Update Product: ",error.message);
+        res.status(500 ).json({success:false,message:`Product not updated because: ${error.message}`})
+    }
+})
 
 app.listen(5000,()=>{
     connectDB();
