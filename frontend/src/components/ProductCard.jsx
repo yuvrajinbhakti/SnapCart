@@ -36,7 +36,7 @@ const ProductCard = ({ product }) => {
 	const handleDeleteProduct = async (pid) => {
 		const { success, message } = await deleteProduct(pid);
 		if (!success) {
-			toast({
+			toast({ 
 				title: "Error",
 				description: message,
 				status: "error",
