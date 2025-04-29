@@ -20,5 +20,10 @@ if(res.ok){
 }else{
     return {success:false,message:data.message}
 }
-    }
+    },
+   fetchProducts: async ()=>{
+    const res = await fetch("/api/products");
+    const data = await res.json();
+    set({products:data.data});
+   }
 }));
