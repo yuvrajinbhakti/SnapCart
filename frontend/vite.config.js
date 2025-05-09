@@ -12,6 +12,9 @@ export default defineConfig({
       }
     }
   },
+  build: {
+    outDir: 'dist',
+  },
   optimizeDeps: {
     include: ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion'],
   },
