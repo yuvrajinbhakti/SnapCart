@@ -1,4 +1,6 @@
 import {create} from "zustand";
+import { apiBaseUrl } from "../config.js";
+
 export const useProductStore = create((set)=>({
     products:[],
     setProducts:(products)=>set({products}),
@@ -6,7 +8,7 @@ export const useProductStore = create((set)=>({
         if(!newProduct.name || !newProduct.price || !newProduct.image){
             return {success:false,message:"Please fill all the fields"}
         }
-        const res= await fetch("/api/products",{
+        const res= await fetch(`${apiBaseUrl}/products`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
@@ -22,12 +24,12 @@ export const useProductStore = create((set)=>({
         }
     },
    fetchProducts: async ()=>{
-    const res = await fetch("/api/products");
+    const res = await fetch(`${apiBaseUrl}/products`);
     const data = await res.json();
     set({products:data.data});
    },
    deleteProduct: async (pid)=>{
-    const res = await fetch(`/api/products/${pid}`,{
+    const res = await fetch(`${apiBaseUrl}/products/${pid}`,{
         method:"DELETE",
     });
     const data = await res.json();
@@ -36,7 +38,7 @@ export const useProductStore = create((set)=>({
     return {success:true, message:"Product deleted successfully"};
    },
    updateProduct: async (pid,updatedProduct)=>{
-    const res = await fetch(`/api/products/${pid}`,{
+    const res = await fetch(`${apiBaseUrl}/products/${pid}`,{
         method:"PUT",
         headers:{
             "Content-Type":"application/json",
