@@ -5,9 +5,10 @@ import cors from "cors";
 
 import { connectDB } from './config/db.js';
 import productRoutes from "./routes/product.route.js";
+import healthRoutes from "./routes/health.route.js";
 dotenv.config();
 
-const app=express();
+const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Debug environment mode
@@ -30,18 +31,38 @@ app.use((req, res, next) => {
   next();
 });
 
+// Handle API routes
 app.use("/api/products", productRoutes);     // /api/products will be appended to all api i.e. prefixed with /api/products
+app.use("/api/health", healthRoutes);        // Health check endpoint
 
-if(process.env.NODE_ENV === "production"){
-    console.log("Entering production mode block");
-    app.use(express.static(path.join(__dirname,"/frontend/dist"))); //making frontend/dist(which we got on running npm run build in frontend) folder static so that it can be served as static files
+// For Vercel deployment serverless function support
+if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    console.log("Running in production mode");
     
-    app.get(/(.*)/, (req, res) => {
-        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    // API route that confirms the API is running
+    app.get("/api/health", (req, res) => {
+        res.status(200).send({ status: "ok", message: "API is running" });
     });
+    
+    // For local production testing with frontend in dist folder
+    if (!process.env.VERCEL) {
+        app.use(express.static(path.join(__dirname, "/frontend/dist")));
+        app.get("*", (req, res) => {
+            res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+        });
+    }
 }
 
-app.listen(PORT,()=>{
+// For local development, we'll need the server to listen on a port
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        connectDB();
+        console.log("Server is running on http://localhost:" + PORT);
+    });
+} else {
+    // In Vercel environment, just connect to DB
     connectDB();
-    console.log("Server is running on http://localhost:"+PORT);
-});
+}
+
+// For Vercel serverless functions
+export default app;
