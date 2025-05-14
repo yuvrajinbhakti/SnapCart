@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 // Debug environment mode
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`VERCEL_ENV: ${process.env.VERCEL_ENV}`);
 
 // Enable CORS with more explicit configuration
 app.use(cors({
@@ -23,7 +24,7 @@ app.use(cors({
 }));
 
 const __dirname = path.resolve();
-app.use(express.json());  //middleware(function which runs before we send response back to client) to parse request body (allows to accpt JSON data in req.body)
+app.use(express.json());  //middleware to parse request body
 
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
@@ -32,36 +33,34 @@ app.use((req, res, next) => {
 });
 
 // Handle API routes
-app.use("/api/products", productRoutes);     // /api/products will be appended to all api i.e. prefixed with /api/products
-app.use("/api/health", healthRoutes);        // Health check endpoint
+app.use("/api/products", productRoutes);
+app.use("/api/health", healthRoutes);
 
-// For Vercel deployment serverless function support
-if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
-    console.log("Running in production mode");
-    
-    // API route that confirms the API is running
-    app.get("/api/health", (req, res) => {
-        res.status(200).send({ status: "ok", message: "API is running" });
+// API route that confirms the API is running
+app.get("/api/health", (req, res) => {
+    res.status(200).send({ status: "ok", message: "API is running" });
+});
+
+// Connect to database as soon as possible
+try {
+    connectDB();
+} catch (error) {
+    console.error("Failed to connect to database:", error);
+}
+
+// For production mode with frontend in dist folder
+if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
     });
-    
-    // For local production testing with frontend in dist folder
-    if (!process.env.VERCEL) {
-        app.use(express.static(path.join(__dirname, "/frontend/dist")));
-        app.get("*", (req, res) => {
-            res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-        });
-    }
 }
 
 // For local development, we'll need the server to listen on a port
 if (!process.env.VERCEL) {
     app.listen(PORT, () => {
-        connectDB();
         console.log("Server is running on http://localhost:" + PORT);
     });
-} else {
-    // In Vercel environment, just connect to DB
-    connectDB();
 }
 
 // For Vercel serverless functions
