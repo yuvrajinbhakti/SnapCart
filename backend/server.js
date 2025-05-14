@@ -17,7 +17,7 @@ console.log(`VERCEL_ENV: ${process.env.VERCEL_ENV}`);
 
 // Enable CORS with more explicit configuration
 app.use(cors({
-    origin: ["http://localhost:5173", "https://snap-cart-4gh8.vercel.app"],
+    origin: true, // Allow requests from any origin for debugging
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]

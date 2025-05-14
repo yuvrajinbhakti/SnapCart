@@ -14,6 +14,8 @@ export const useProductStore = create((set)=>({
                 "Content-Type":"application/json",
             },
             body:JSON.stringify(newProduct),
+            mode: 'cors',
+            credentials: 'same-origin'
         });
         const data = await res.json();
         if(res.ok){
@@ -24,13 +26,18 @@ export const useProductStore = create((set)=>({
         }
     },
    fetchProducts: async ()=>{
-    const res = await fetch(`${apiBaseUrl}/products`);
+    const res = await fetch(`${apiBaseUrl}/products`, {
+      mode: 'cors',
+      credentials: 'same-origin'
+    });
     const data = await res.json();
     set({products:data.data});
    },
    deleteProduct: async (pid)=>{
     const res = await fetch(`${apiBaseUrl}/products/${pid}`,{
         method:"DELETE",
+        mode: 'cors',
+        credentials: 'same-origin'
     });
     const data = await res.json();
     if(!data.success) return {success:false, message:data.message};
@@ -44,6 +51,8 @@ export const useProductStore = create((set)=>({
             "Content-Type":"application/json",
         },
         body:JSON.stringify(updatedProduct),
+        mode: 'cors',
+        credentials: 'same-origin'
     });
     const data = await res.json();
     if(!data.success) return {success:false,message:data.message};
