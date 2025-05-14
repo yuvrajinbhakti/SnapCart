@@ -13,7 +13,12 @@
     {
       "src": "/api/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://snap-cart-4gh8.vercel.app",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
     },
     {
       "src": "/(.*)",
